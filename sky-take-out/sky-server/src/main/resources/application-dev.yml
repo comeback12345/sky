@@ -10,5 +10,5 @@ sky:
     bucket-name: sky-web-learn
     #前段已经加上了https://
     endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-secret: dPTsbvy3PbenmHdaOzdDdHMnEuOk2y
-    access-key-id: LTAI5tBUvoPFKgRnvcc2rVc7
+    access-key-secret: xCJcvszlrQCRpZ11Dj6OFc84GvHzve
+    access-key-id: LTAI5t5yuZLEHWVvapumgu8M
