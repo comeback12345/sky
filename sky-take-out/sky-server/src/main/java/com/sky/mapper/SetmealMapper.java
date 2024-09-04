@@ -71,7 +71,7 @@ public interface SetmealMapper {
     Setmeal getByid(Long id);
 
     /**
-     * 更护setmealId删除套餐
+     * 根据setmealId删除套餐
      * @param setmealId
      */
     @Delete("delete from setmeal where id = #{setmealId}")
