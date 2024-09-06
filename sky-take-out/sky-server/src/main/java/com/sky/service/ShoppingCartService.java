@@ -25,4 +25,12 @@ public interface ShoppingCartService {
      * @return
      */
     void cleanshopCart();
+
+    /**
+     * 商品数量减一
+     * @param shoppingCartDTO
+     * @return
+     */
+    void subShoppingCart(ShoppingCartDTO shoppingCartDTO);
+
 }
