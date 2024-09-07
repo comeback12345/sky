@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -18,6 +19,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,8 +49,10 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
-    private Orders orders;
+    private Orders orders;//全局变量，可以跳过微信支付
 
     /**
      * 用户提交订单
@@ -142,14 +148,16 @@ public class OrderServiceImpl implements OrderService {
         Integer OrderStatus = Orders.TO_BE_CONFIRMED;  //订单状态，待接单
         LocalDateTime check_out_time = LocalDateTime.now();//更新支付时间
         orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, this.orders.getId());
+        String outTradeNo=orders.getNumber();
+        paySuccess(outTradeNo);
         //这四行
+
 
         return vo;
     }
 
     /**
      * 支付成功，修改订单状态
-     *
      * @param outTradeNo
      */
     public void paySuccess(String outTradeNo) {
@@ -166,6 +174,14 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+        Map map=new HashMap<>();
+        map.put("type",1);
+        map.put("orderId",ordersDB.getId());
+        map.put("content","订单号"+outTradeNo);
+
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     /**
@@ -230,7 +246,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 用户取消订单
-     *
      * @param id
      */
     public void userCancelById(Long id) throws Exception {
@@ -299,7 +314,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 订单搜索
-     *
      * @param ordersPageQueryDTO
      * @return
      */
@@ -336,7 +350,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 根据订单id获取菜品信息字符串
-     *
      * @param orders
      * @return
      */
@@ -356,7 +369,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 各个状态的订单数量统计
-     *
      * @return
      */
     public OrderStatisticsVO statistics() {
@@ -375,7 +387,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 接单
-     *
      * @param ordersConfirmDTO
      */
     public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
@@ -389,7 +400,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 拒单
-     *
      * @param ordersRejectionDTO
      */
     public void rejection(OrdersRejectionDTO ordersRejectionDTO) throws Exception {
@@ -425,7 +435,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 取消订单
-     *
      * @param ordersCancelDTO
      */
     public void cancel(OrdersCancelDTO ordersCancelDTO) throws Exception {
@@ -455,7 +464,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 派送订单
-     *
      * @param id
      */
     public void delivery(Long id) {
@@ -477,7 +485,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 完成订单
-     *
      * @param id
      */
     public void complete(Long id) {
@@ -496,5 +503,6 @@ public class OrderServiceImpl implements OrderService {
         orders.setDeliveryTime(LocalDateTime.now());
 
         orderMapper.update(orders);
+
     }
 }

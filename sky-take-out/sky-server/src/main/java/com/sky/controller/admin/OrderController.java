@@ -61,7 +61,6 @@ public class OrderController {
 
     /**
      * 接单
-     *
      * @return
      */
     @PutMapping("/confirm")
@@ -73,7 +72,6 @@ public class OrderController {
 
     /**
      * 拒单
-     *
      * @return
      */
     @PutMapping("/rejection")
@@ -85,7 +83,6 @@ public class OrderController {
 
     /**
      * 取消订单
-     *
      * @return
      */
     @PutMapping("/cancel")
@@ -97,7 +94,6 @@ public class OrderController {
 
     /**
      * 派送订单
-     *
      * @return
      */
     @PutMapping("/delivery/{id}")
@@ -109,7 +105,6 @@ public class OrderController {
 
     /**
      * 完成订单
-     *
      * @return
      */
     @PutMapping("/complete/{id}")
