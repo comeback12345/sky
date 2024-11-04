@@ -147,7 +147,8 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     public SetmealOverViewVO getSetmealOverView() {
         Map map = new HashMap();
         map.put("status", StatusConstant.ENABLE);
-        Integer sold = setmealMapper.countByMap(map);
+        Integer sold = setmealMapper.
+                countByMap(map);
 
         map.put("status", StatusConstant.DISABLE);
         Integer discontinued = setmealMapper.countByMap(map);
